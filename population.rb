@@ -37,5 +37,7 @@ class Population
         gets
       end
     end
-  end 
+  end
 end
+p = Population.new
+p.run 

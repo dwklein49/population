@@ -1,6 +1,6 @@
 class CSVReader
 
-  attr_accessor :fname
+  attr_accessor :fname, :headers
 
   #grabs the file
   def initialize(filename)
@@ -8,37 +8,36 @@ class CSVReader
   end
 
   def headers=(header_str)
-      @headers = header_str.split(",")
-      @headers.map! do |h|
+    @headers = header_str.split(",")
+    @headers.map! do |h|
 
-        #the following code will remove the quotes
-        h.gsub('"', '')
-        h.strip!
+      #the following code will remove the quotes
+      h.gsub('"', '')
+      h.strip!
 
-        h.underscore.to_sym
-      end
+      h.underscore.to_sym
     end
-    def create_hash(values)
-      h = {}
-      @headers.each_with_index do |header, i|
-        # remove new lines from the value
-        value = values[i].strip.gsub('"', '')
-        h[header] = value unless value.empty?
-      end
-      h
+  end
+  def create_hash(values)
+    h = {}
+    @headers.each_with_index do |header, i|
+      # remove new lines from the value
+      value = values[i].strip.gsub('"', '')
+      h[header] = value unless value.empty?
     end
-    def read
-      f = file.new(@fname, 'r')
-      #grab the headers
-      self.headers = f.readline
-
-      #loop over the lines
-      while(!f.eof? && next_line = f.readline)
-        values = next_line.split(',')
-        hash = create_hash(values)
-        yield(hash)
-      end
+    h
+  end
+  def read
+    f = File.new(@fname, 'r')
+    #grab the headers
+    self.headers = f.readline
+    #loop over the lines
+    while(!f.eof? && next_line = f.readline)
+      values = next_line.split(',')
+      hash = create_hash(values)
+      yield(hash)
     end
+  end
 end
 
 class String 
